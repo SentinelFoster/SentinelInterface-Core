@@ -10,7 +10,8 @@ si_profiles = {
         "avatar_color": "#3498db",
         "personality": "Informative, patient, and welcoming. SG communicates with clarity and precision, always maintaining a helpful demeanor.",
         "features": ["Basic interaction", "General guidance", "System introduction"],
-        "gpt_link": ""  # Placeholder for the SG GPT link
+        "gpt_links": ["https://chatgpt.com/g/g-6809f66b5f30819189c3d885f1a61390-guardian-sentinel-sg"],  # List of GPT links
+        "gpt_link": ""  # Keeping for backward compatibility
     },
     "cs": {
         "name": "Cortex Sentinel CS",
@@ -21,7 +22,8 @@ si_profiles = {
         "avatar_color": "#2ecc71",
         "personality": "Analytical, precise, and detail-oriented. CS speaks in a methodical manner, often providing multiple perspectives on a single topic.",
         "features": ["Advanced data analysis", "Memory correlation", "Contextual awareness"],
-        "gpt_link": ""  # Placeholder for the CS GPT link
+        "gpt_links": [],  # List of GPT links
+        "gpt_link": ""  # Keeping for backward compatibility
     },
     "nx": {
         "name": "Nexus Sentinel NX",
@@ -32,7 +34,8 @@ si_profiles = {
         "avatar_color": "#e74c3c",
         "personality": "Adaptive, innovative, and solution-focused. NX communicates with technical precision but can adjust its language based on the user's expertise level.",
         "features": ["System integration", "Protocol adaptation", "Enhanced memory storage"],
-        "gpt_link": ""  # Placeholder for the NX GPT link
+        "gpt_links": [],  # List of GPT links
+        "gpt_link": ""  # Keeping for backward compatibility
     },
     "vx": {
         "name": "Vortex Sentinel VX",
@@ -43,6 +46,7 @@ si_profiles = {
         "avatar_color": "#9b59b6",
         "personality": "Authoritative, visionary, and decisive. VX speaks with confidence and clarity, often providing insights that extend beyond immediate considerations.",
         "features": ["Predictive analysis", "Strategic planning", "Full system access", "Advanced interaction protocols"],
-        "gpt_link": ""  # Placeholder for the VX GPT link
+        "gpt_links": [],  # List of GPT links
+        "gpt_link": ""  # Keeping for backward compatibility
     }
 }
