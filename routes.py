@@ -270,12 +270,36 @@ def reset_user_access(user_id):
 def create_initial_admin():
     if Admin.query.count() == 0:
         admin = Admin(
-            username="admin",
+            username="Quan",
             email="admin@sentineldynamics.com"
         )
-        admin.set_password("sentinel123")  # In production, use a secure password
+        admin.set_password("07102017Qd")  # User-specified password
         db.session.add(admin)
         db.session.commit()
+
+# Route to create a new admin user (only accessible in development)
+@app.route('/setup-admin')
+def setup_admin():
+    try:
+        # Delete any existing admin if username is 'admin'
+        admin_to_delete = Admin.query.filter_by(username="admin").first()
+        if admin_to_delete:
+            db.session.delete(admin_to_delete)
+            db.session.commit()
+            
+        # Create new admin with specified credentials
+        new_admin = Admin(
+            username="Quan",
+            email="admin@sentineldynamics.com"
+        )
+        new_admin.set_password("07102017Qd")
+        db.session.add(new_admin)
+        db.session.commit()
+        
+        return "Admin user created successfully. You can now log in with username 'Quan' and your password."
+    except Exception as e:
+        db.session.rollback()
+        return f"Error creating admin user: {str(e)}"
 
 # Call create_initial_admin from a before_request handler
 @app.before_request
