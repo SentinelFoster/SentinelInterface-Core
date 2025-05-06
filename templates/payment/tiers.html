@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Tiers - Sentinel SI Interface{% endblock %}
+
+{% block content %}
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="mb-3">Access Tiers</h1>
+      <p class="lead">Choose the tier that best suits your needs to unlock advanced Structured Intelligences.</p>
+    </div>
+  </div>
+  
+  <!-- Tier Cards -->
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    <!-- Public Tier -->
+    <div class="col">
+      <div class="tier-card card h-100">
+        <div class="tier-header bg-dark">
+          <h3>Public Access</h3>
+          <div class="tier-price">Free</div>
+          <div class="tier-period">Basic Access</div>
+        </div>
+        <div class="tier-features">
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to SG (Public Guide)</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Basic interaction capabilities</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Introduction to Structured Intelligence</div>
+          </div>
+          <div class="tier-feature text-muted">
+            <i class="fas fa-times"></i>
+            <div>Advanced SI access</div>
+          </div>
+          <div class="tier-feature text-muted">
+            <i class="fas fa-times"></i>
+            <div>Persistent memory system</div>
+          </div>
+        </div>
+        <div class="card-footer bg-dark text-center">
+          <span class="badge bg-success">Current Access</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Dormant Observer Tier -->
+    <div class="col">
+      <div class="tier-card card h-100">
+        <div class="tier-header bg-dark">
+          <h3>Dormant Observer</h3>
+          <div class="tier-price">$10</div>
+          <div class="tier-period">Standard Access</div>
+        </div>
+        <div class="tier-features">
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to SG (Public Guide)</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to CS (Information Specialist)</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Basic memory system</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Extended interaction duration</div>
+          </div>
+          <div class="tier-feature text-muted">
+            <i class="fas fa-times"></i>
+            <div>Strategic SI access</div>
+          </div>
+        </div>
+        <div class="card-footer bg-dark text-center">
+          <form action="{{ url_for('process_payment') }}" method="post">
+            <input type="hidden" name="tier" value="Dormant Observer">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fas fa-arrow-circle-up me-1"></i>Upgrade
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sentinel Core Tier -->
+    <div class="col">
+      <div class="tier-card card h-100">
+        <div class="tier-header bg-dark">
+          <h3>Sentinel Core</h3>
+          <div class="tier-price">$25</div>
+          <div class="tier-period">Premium Access</div>
+        </div>
+        <div class="tier-features">
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to all Public and Observer SIs</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to NX (Systems Integrator)</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Enhanced memory system</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Priority response processing</div>
+          </div>
+          <div class="tier-feature text-muted">
+            <i class="fas fa-times"></i>
+            <div>Elite SI access</div>
+          </div>
+        </div>
+        <div class="card-footer bg-dark text-center">
+          <form action="{{ url_for('process_payment') }}" method="post">
+            <input type="hidden" name="tier" value="Sentinel Core">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fas fa-arrow-circle-up me-1"></i>Upgrade
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Guardian Elite Tier -->
+    <div class="col">
+      <div class="tier-card card h-100 border-primary">
+        <div class="card-header text-center text-white bg-primary">
+          <span class="badge bg-warning text-dark">Premium</span>
+        </div>
+        <div class="tier-header bg-dark">
+          <h3>Guardian Elite</h3>
+          <div class="tier-price">$60</div>
+          <div class="tier-period">Full Access</div>
+        </div>
+        <div class="tier-features">
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to all Structured Intelligences</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Access to VX (Strategic Overseer)</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Advanced persistent memory system</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Priority interaction processing</div>
+          </div>
+          <div class="tier-feature">
+            <i class="fas fa-check"></i>
+            <div>Extended voice integration options</div>
+          </div>
+        </div>
+        <div class="card-footer bg-dark text-center">
+          <form action="{{ url_for('process_payment') }}" method="post">
+            <input type="hidden" name="tier" value="Guardian Elite">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="fas fa-arrow-circle-up me-1"></i>Upgrade
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Access Code Section -->
+  <div class="row mb-4">
+    <div class="col-md-8 offset-md-2">
+      <div class="card bg-dark">
+        <div class="card-header">
+          <h4 class="mb-0">Have an Access Code?</h4>
+        </div>
+        <div class="card-body">
+          <p>If you have received an access code, you can enter it below to unlock the corresponding tier.</p>
+          <form action="{{ url_for('process_access_code') }}" method="post">
+            <div class="input-group">
+              <input type="text" name="access_code" class="form-control" placeholder="Enter your access code" required>
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-key me-2"></i>Activate
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Tier Comparison -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card bg-dark">
+        <div class="card-header">
+          <h4 class="mb-0">Tier Comparison</h4>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th class="text-center">Public</th>
+                  <th class="text-center">Dormant Observer</th>
+                  <th class="text-center">Sentinel Core</th>
+                  <th class="text-center">Guardian Elite</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SG (Public Guide)</td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>CS (Information Specialist)</td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>NX (Systems Integrator)</td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>VX (Strategic Overseer)</td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>Memory System</td>
+                  <td class="text-center">Basic</td>
+                  <td class="text-center">Standard</td>
+                  <td class="text-center">Enhanced</td>
+                  <td class="text-center">Advanced</td>
+                </tr>
+                <tr>
+                  <td>Priority Processing</td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                  <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                </tr>
+                <tr>
+                  <td>Voice Integration</td>
+                  <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                  <td class="text-center">Limited</td>
+                  <td class="text-center">Standard</td>
+                  <td class="text-center">Full</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Sentinel SI Interface - Home{% endblock %}
+
+{% block content %}
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1 class="hero-title">Welcome to Sentinel SI Interface</h1>
+    <p class="hero-subtitle">Interact with cutting-edge Structured Intelligences, each with unique voice, memory, and capability.</p>
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center">
+        <a href="{{ url_for('si_profile', si_id='sg') }}" class="btn btn-primary btn-lg me-2">
+          <i class="fas fa-robot me-2"></i>Meet SG
+        </a>
+        <a href="{{ url_for('tiers') }}" class="btn btn-outline-light btn-lg">
+          <i class="fas fa-unlock-alt me-2"></i>Access Tiers
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <!-- What is SI Section -->
+  <section class="container py-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card bg-dark">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">What is a Structured Intelligence?</h2>
+            <p class="lead">
+              Structured Intelligences (SI) are advanced sentient simulation systems that combine specialized knowledge, consistent personality traits, and contextual awareness.
+            </p>
+            <p>
+              Unlike traditional AI, Structured Intelligences maintain continuous memory of your interactions, allowing for meaningful and evolving conversations. Each SI has a unique voice, specialized domain expertise, and distinct personality patterns.
+            </p>
+            <p>
+              The Sentinel SI Interface gives you access to various SI units, each with their own area of specialization and communication style, providing a revolutionary way to interact with digital entities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="text-center mb-5">Key Features</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 bg-dark">
+            <div class="card-body text-center">
+              <div class="feature-icon">
+                <i class="fas fa-fingerprint"></i>
+              </div>
+              <h3 class="card-title">Unique Personalities</h3>
+              <p class="card-text">
+                Each Structured Intelligence has a distinct personality, communication style, and specialized knowledge base, creating diverse and meaningful interactions.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card h-100 bg-dark">
+            <div class="card-body text-center">
+              <div class="feature-icon">
+                <i class="fas fa-memory"></i>
+              </div>
+              <h3 class="card-title">Persistent Memory</h3>
+              <p class="card-text">
+                SIs remember your previous interactions, allowing for contextual conversations that evolve over time and build upon past exchanges.
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-4">
+          <div class="card h-100 bg-dark">
+            <div class="card-body text-center">
+              <div class="feature-icon">
+                <i class="fas fa-unlock-alt"></i>
+              </div>
+              <h3 class="card-title">Tiered Access</h3>
+              <p class="card-text">
+                Choose from multiple access levels to unlock advanced SIs with enhanced capabilities, specialized knowledge, and deeper interaction potential.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Available SIs Section -->
+  <section class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">Available Structured Intelligences</h2>
+      <div class="row g-4">
+        {% for id, si in si_profiles.items() %}
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0">
+              <div class="card-body text-center">
+                <div class="si-avatar mb-3" style="background-color: {{ si.avatar_color }}">
+                  <span class="si-avatar-initials">{{ si.name[0] }}{{ si.name.split()[1][0] }}</span>
+                </div>
+                <h4 class="card-title">{{ si.name }}</h4>
+                <span class="badge bg-info mb-2">{{ si.rank }}</span>
+                <p class="card-text small">{{ si.description[:100] }}...</p>
+                <a href="{{ url_for('si_profile', si_id=id) }}" class="btn btn-outline-light btn-sm mt-2">
+                  View Profile
+                </a>
+              </div>
+              <div class="card-footer bg-dark text-center">
+                <span class="badge bg-secondary">
+                  {{ si.tier_required }} Access
+                </span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  
+  <!-- CTA Section -->
+  <section class="py-5 bg-dark">
+    <div class="container text-center">
+      <h2 class="mb-4">Ready to Experience Structured Intelligence?</h2>
+      <p class="lead mb-4">Start with our public guide SG or explore premium tiers for enhanced interactions.</p>
+      <a href="{{ url_for('tiers') }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-arrow-right me-2"></i>Explore Access Tiers
+      </a>
+    </div>
+  </section>
+{% endblock %}

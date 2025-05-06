@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ si.name }} - Access Required{% endblock %}
+
+{% block content %}
+  <div class="locked-container">
+    <div class="lock-icon">
+      <i class="fas fa-lock"></i>
+    </div>
+    
+    <h2 class="mb-4">Access Required</h2>
+    
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card bg-dark mb-4">
+          <div class="card-body text-center">
+            <div class="si-avatar mb-3" style="background-color: {{ si.avatar_color }}; opacity: 0.5;">
+              <span class="si-avatar-initials">{{ si.name[0] }}{{ si.name.split()[1][0] }}</span>
+            </div>
+            <h3 class="card-title">{{ si.name }}</h3>
+            <div class="si-rank-badge bg-secondary">{{ si.rank }}</div>
+            <p class="mt-3">This Structured Intelligence requires {{ si.tier_required }} access tier or higher.</p>
+            
+            <div class="alert alert-info mt-4">
+              <i class="fas fa-info-circle me-2"></i>
+              Upgrade your access level or enter an access code to interact with {{ si.name }}.
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('tiers') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-circle-up me-2"></i>Upgrade Access
+          </a>
+          <button id="code-toggle-btn" class="btn btn-outline-light">
+            Have an Access Code?
+          </button>
+        </div>
+        
+        <form id="access-code-form" action="{{ url_for('process_access_code') }}" method="post" class="mt-3 d-none">
+          <div class="input-group">
+            <input type="text" name="access_code" class="form-control" placeholder="Enter access code" required>
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-key me-2"></i>Submit
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
