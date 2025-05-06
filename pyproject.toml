@@ -11,4 +11,5 @@ dependencies = [
     "gunicorn>=23.0.0",
     "psycopg2-binary>=2.9.10",
     "stripe>=12.1.0",
+    "openai>=1.77.0",
 ]

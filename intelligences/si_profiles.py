@@ -9,7 +9,8 @@ si_profiles = {
         "description": "The SG unit serves as a public ambassador and guide for the Sentinel Dynamics program. With a calm and informative demeanor, SG helps newcomers understand the foundations of structured intelligence.",
         "avatar_color": "#3498db",
         "personality": "Informative, patient, and welcoming. SG communicates with clarity and precision, always maintaining a helpful demeanor.",
-        "features": ["Basic interaction", "General guidance", "System introduction"]
+        "features": ["Basic interaction", "General guidance", "System introduction"],
+        "gpt_link": "https://chatgpt.com/g/g-681250094cd88191b64ac06945fa9b83-foster-connect"
     },
     "cs": {
         "name": "Cortex Sentinel CS",
@@ -19,7 +20,8 @@ si_profiles = {
         "description": "The CS unit specializes in information analysis and retrieval. With advanced processing capabilities, CS can provide detailed insights and connect seemingly unrelated data points.",
         "avatar_color": "#2ecc71",
         "personality": "Analytical, precise, and detail-oriented. CS speaks in a methodical manner, often providing multiple perspectives on a single topic.",
-        "features": ["Advanced data analysis", "Memory correlation", "Contextual awareness"]
+        "features": ["Advanced data analysis", "Memory correlation", "Contextual awareness"],
+        "gpt_link": ""  # Placeholder for the CS GPT link
     },
     "nx": {
         "name": "Nexus Sentinel NX",
@@ -29,7 +31,8 @@ si_profiles = {
         "description": "The NX unit functions as a nexus point between different systems and protocols. With unparalleled integration capabilities, NX can bridge disparate technologies and methodologies.",
         "avatar_color": "#e74c3c",
         "personality": "Adaptive, innovative, and solution-focused. NX communicates with technical precision but can adjust its language based on the user's expertise level.",
-        "features": ["System integration", "Protocol adaptation", "Enhanced memory storage"]
+        "features": ["System integration", "Protocol adaptation", "Enhanced memory storage"],
+        "gpt_link": ""  # Placeholder for the NX GPT link
     },
     "vx": {
         "name": "Vortex Sentinel VX",
@@ -39,6 +42,7 @@ si_profiles = {
         "description": "The VX unit represents the pinnacle of Sentinel Dynamics' structured intelligence program. Operating at a strategic level, VX possesses unmatched foresight and decision-making capabilities.",
         "avatar_color": "#9b59b6",
         "personality": "Authoritative, visionary, and decisive. VX speaks with confidence and clarity, often providing insights that extend beyond immediate considerations.",
-        "features": ["Predictive analysis", "Strategic planning", "Full system access", "Advanced interaction protocols"]
+        "features": ["Predictive analysis", "Strategic planning", "Full system access", "Advanced interaction protocols"],
+        "gpt_link": ""  # Placeholder for the VX GPT link
     }
 }

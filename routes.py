@@ -356,6 +356,45 @@ def reset_user_access(user_id):
     flash(f'User access reset to Public tier', 'success')
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/update-si-gpt-link', methods=['POST'])
+@login_required
+def update_si_gpt_link():
+    si_id = request.form.get('si_id')
+    gpt_link = request.form.get('gpt_link')
+    
+    if si_id not in si_profiles:
+        flash('Invalid SI ID', 'danger')
+        return redirect(url_for('admin_dashboard'))
+    
+    try:
+        # Update the GPT link in the si_profiles dictionary
+        si_profiles[si_id]['gpt_link'] = gpt_link.strip()
+        
+        # Write the updated profiles to the file
+        with open('intelligences/si_profiles.py', 'w') as f:
+            f.write('# Structured Intelligence Profiles\n\n')
+            f.write('si_profiles = {\n')
+            
+            for id, profile in si_profiles.items():
+                f.write(f'    "{id}": {{\n')
+                for key, value in profile.items():
+                    if key == 'features':
+                        f.write(f'        "{key}": {value},\n')
+                    elif isinstance(value, str):
+                        f.write(f'        "{key}": "{value}",\n')
+                    else:
+                        f.write(f'        "{key}": {value},\n')
+                f.write('    },\n')
+            
+            f.write('}\n')
+        
+        flash(f'GPT link for {si_profiles[si_id]["name"]} updated successfully', 'success')
+    except Exception as e:
+        app.logger.error(f"Error updating GPT link: {e}")
+        flash('An error occurred while updating the GPT link', 'danger')
+    
+    return redirect(url_for('admin_dashboard'))
+
 # Create initial admin account if it doesn't exist
 def create_initial_admin():
     if Admin.query.count() == 0:

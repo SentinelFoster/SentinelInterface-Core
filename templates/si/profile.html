@@ -33,6 +33,14 @@
               <i class="fas fa-unlock me-1"></i>Unlocked
             </span>
           </div>
+          
+          {% if si.gpt_link %}
+          <div class="mt-4">
+            <a href="{{ si.gpt_link }}" target="_blank" class="btn btn-primary w-100">
+              <i class="fas fa-external-link-alt me-2"></i>Connect with {{ si.name }}
+            </a>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
