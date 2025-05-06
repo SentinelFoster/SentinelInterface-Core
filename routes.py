@@ -14,16 +14,25 @@ def inject_si_profiles():
 # Ensure session exists for user tracking
 @app.before_request
 def check_session():
-    if 'user_session_id' not in session:
-        session['user_session_id'] = str(uuid.uuid4())
-        # Create user record in database
-        new_user = User(session_id=session['user_session_id'])
-        db.session.add(new_user)
-        db.session.commit()
+    try:
+        if 'user_session_id' not in session:
+            session['user_session_id'] = str(uuid.uuid4())
+            # Create user record in database
+            new_user = User(session_id=session['user_session_id'])
+            db.session.add(new_user)
+            db.session.commit()
+    except Exception as e:
+        app.logger.error(f"Error in check_session: {e}")
+        # If we can't create a user, at least provide a session ID
+        if 'user_session_id' not in session:
+            session['user_session_id'] = str(uuid.uuid4())
 
 def get_current_user():
     if 'user_session_id' in session:
-        return User.query.filter_by(session_id=session['user_session_id']).first()
+        try:
+            return User.query.filter_by(session_id=session['user_session_id']).first()
+        except Exception as e:
+            app.logger.error(f"Error in get_current_user: {e}")
     return None
 
 # Home route
@@ -82,14 +91,19 @@ def si_interact(si_id):
     
     # Store the interaction in the database
     if user:
-        interaction = Interaction(
-            user_id=user.id,
-            si_id=si_id,
-            user_input=user_input,
-            si_response=response
-        )
-        db.session.add(interaction)
-        db.session.commit()
+        try:
+            interaction = Interaction(
+                user_id=user.id,
+                si_id=si_id,
+                user_input=user_input,
+                si_response=response
+            )
+            db.session.add(interaction)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error(f"Error storing interaction: {e}")
+            db.session.rollback()
+            # Still return a response even if storage fails
     
     return jsonify({'response': response})
 
@@ -108,21 +122,26 @@ def process_access_code():
         flash('Session error. Please try again.', 'danger')
         return redirect(url_for('tiers'))
     
-    # Check if code exists and is not used
-    access_code = AccessCode.query.filter_by(code=code, is_used=False).first()
-    
-    if access_code:
-        # Update user's access tier
-        user.access_tier = access_code.tier
+    try:
+        # Check if code exists and is not used
+        access_code = AccessCode.query.filter_by(code=code, is_used=False).first()
         
-        # Mark code as used
-        access_code.is_used = True
-        access_code.used_by = user.id
-        
-        db.session.commit()
-        flash(f'Access granted! Your account has been upgraded to {access_code.tier} tier.', 'success')
-    else:
-        flash('Invalid or already used access code', 'danger')
+        if access_code:
+            # Update user's access tier
+            user.access_tier = access_code.tier
+            
+            # Mark code as used
+            access_code.is_used = True
+            access_code.used_by = user.id
+            
+            db.session.commit()
+            flash(f'Access granted! Your account has been upgraded to {access_code.tier} tier.', 'success')
+        else:
+            flash('Invalid or already used access code', 'danger')
+    except Exception as e:
+        app.logger.error(f"Error processing access code: {e}")
+        db.session.rollback()
+        flash('An error occurred while processing your access code. Please try again.', 'danger')
     
     return redirect(url_for('tiers'))
 
@@ -147,22 +166,28 @@ def process_payment():
         flash('Invalid tier selected', 'danger')
         return redirect(url_for('tiers'))
     
-    # Create a payment record
-    payment = Payment(
-        user_id=user.id,
-        tier=tier,
-        amount=tier_prices[tier],
-        transaction_id=f"SIMULATED-{uuid.uuid4()}",
-        status="completed"
-    )
+    try:
+        # Create a payment record
+        payment = Payment(
+            user_id=user.id,
+            tier=tier,
+            amount=tier_prices[tier],
+            transaction_id=f"SIMULATED-{uuid.uuid4()}",
+            status="completed"
+        )
+        
+        # Update user's access tier
+        user.access_tier = tier
+        
+        db.session.add(payment)
+        db.session.commit()
+        
+        flash(f'Payment processed successfully! Your account has been upgraded to {tier}.', 'success')
+    except Exception as e:
+        app.logger.error(f"Error processing payment: {e}")
+        db.session.rollback()
+        flash('An error occurred while processing your payment. Please try again.', 'danger')
     
-    # Update user's access tier
-    user.access_tier = tier
-    
-    db.session.add(payment)
-    db.session.commit()
-    
-    flash(f'Payment processed successfully! Your account has been upgraded to {tier}.', 'success')
     return redirect(url_for('tiers'))
 
 # Admin routes
@@ -193,16 +218,21 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     # Get stats for dashboard
-    user_count = User.query.count()
-    interaction_count = Interaction.query.count()
-    recent_interactions = Interaction.query.order_by(Interaction.timestamp.desc()).limit(20).all()
-    
-    return render_template(
-        'admin/dashboard.html',
-        user_count=user_count,
-        interaction_count=interaction_count,
-        recent_interactions=recent_interactions
-    )
+    try:
+        user_count = User.query.count()
+        interaction_count = Interaction.query.count()
+        recent_interactions = Interaction.query.order_by(Interaction.timestamp.desc()).limit(20).all()
+        
+        return render_template(
+            'admin/dashboard.html',
+            user_count=user_count,
+            interaction_count=interaction_count,
+            recent_interactions=recent_interactions
+        )
+    except Exception as e:
+        app.logger.error(f"Error loading admin dashboard: {e}")
+        flash('Error loading dashboard data. Database connection may be unavailable.', 'danger')
+        return render_template('admin/dashboard.html', user_count=0, interaction_count=0, recent_interactions=[])
 
 @app.route('/admin/generate-code', methods=['POST'])
 @login_required
@@ -251,4 +281,9 @@ def create_initial_admin():
 @app.before_request
 def before_request_func():
     if request.endpoint != 'static':
-        create_initial_admin()
+        try:
+            create_initial_admin()
+        except Exception as e:
+            app.logger.error(f"Error in before_request: {e}")
+            # Don't raise the exception to prevent the app from failing
+            # A db error shouldn't prevent the app from running
