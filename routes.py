@@ -1,10 +1,24 @@
 import uuid
+import os
+import json
+import stripe
 from flask import render_template, redirect, url_for, request, flash, session, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import app, db
 from models import Admin, User, Interaction, AccessCode, Payment
 from intelligences.si_profiles import si_profiles
+
+# Set the Stripe API key
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+
+# Get domain for redirect URLs
+def get_domain():
+    if os.environ.get('REPLIT_DEPLOYMENT') != '':
+        return os.environ.get('REPLIT_DEV_DOMAIN', '')
+    else:
+        domains = os.environ.get('REPLIT_DOMAINS', '').split(',')
+        return domains[0] if domains else request.host
 
 # Make si_profiles available to all templates
 @app.context_processor
@@ -145,7 +159,7 @@ def process_access_code():
     
     return redirect(url_for('tiers'))
 
-# Simulate payment (in a real app, this would integrate with Stripe)
+# Create Stripe checkout session
 @app.route('/process-payment', methods=['POST'])
 def process_payment():
     tier = request.form.get('tier', '')
@@ -155,11 +169,18 @@ def process_payment():
         flash('Session error. Please try again.', 'danger')
         return redirect(url_for('tiers'))
     
-    # Tier pricing
+    # Tier pricing (in cents for Stripe)
     tier_prices = {
-        "Dormant Observer": 10.0,
-        "Sentinel Core": 25.0,
-        "Guardian Elite": 60.0
+        "Dormant Observer": 1000,  # $10.00
+        "Sentinel Core": 2500,     # $25.00
+        "Guardian Elite": 6000     # $60.00
+    }
+    
+    # Tier names for Stripe display
+    tier_names = {
+        "Dormant Observer": "Dormant Observer Access Tier",
+        "Sentinel Core": "Sentinel Core Access Tier",
+        "Guardian Elite": "Guardian Elite Access Tier"
     }
     
     if tier not in tier_prices:
@@ -167,27 +188,96 @@ def process_payment():
         return redirect(url_for('tiers'))
     
     try:
-        # Create a payment record
+        domain_url = f"https://{get_domain()}"
+        
+        # Create a new Stripe Checkout Session
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': tier_names[tier],
+                            'description': f'Access to Sentinel SI Interface - {tier} Tier',
+                        },
+                        'unit_amount': tier_prices[tier],
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=domain_url + url_for('payment_success') + f'?tier={tier}&session_id={{CHECKOUT_SESSION_ID}}',
+            cancel_url=domain_url + url_for('payment_cancel'),
+            client_reference_id=str(user.id),
+            metadata={
+                'user_id': user.id,
+                'tier': tier
+            }
+        )
+        
+        # Create a pending payment record
         payment = Payment(
             user_id=user.id,
             tier=tier,
-            amount=tier_prices[tier],
-            transaction_id=f"SIMULATED-{uuid.uuid4()}",
-            status="completed"
+            amount=tier_prices[tier]/100,  # Convert back to dollars for our DB
+            transaction_id=checkout_session.id,
+            status="pending"
         )
-        
-        # Update user's access tier
-        user.access_tier = tier
         
         db.session.add(payment)
         db.session.commit()
         
-        flash(f'Payment processed successfully! Your account has been upgraded to {tier}.', 'success')
+        # Redirect to Stripe Checkout
+        return redirect(checkout_session.url)
+        
     except Exception as e:
-        app.logger.error(f"Error processing payment: {e}")
+        app.logger.error(f"Error creating checkout session: {e}")
         db.session.rollback()
         flash('An error occurred while processing your payment. Please try again.', 'danger')
+        return redirect(url_for('tiers'))
+
+# Payment success route
+@app.route('/payment-success')
+def payment_success():
+    session_id = request.args.get('session_id')
+    tier = request.args.get('tier')
+    user = get_current_user()
     
+    if not user or not session_id or not tier:
+        flash('Invalid payment session.', 'danger')
+        return redirect(url_for('tiers'))
+    
+    try:
+        # Verify the payment with Stripe
+        checkout_session = stripe.checkout.Session.retrieve(session_id)
+        
+        if checkout_session.payment_status == 'paid':
+            # Update the payment record
+            payment = Payment.query.filter_by(transaction_id=session_id).first()
+            if payment:
+                payment.status = "completed"
+                
+                # Update user's access tier
+                user.access_tier = tier
+                
+                db.session.commit()
+                
+                flash(f'Payment processed successfully! Your account has been upgraded to {tier}.', 'success')
+            else:
+                flash('Payment record not found.', 'warning')
+        else:
+            flash('Payment not completed. Please try again.', 'warning')
+    except Exception as e:
+        app.logger.error(f"Error processing successful payment: {e}")
+        flash('An error occurred while verifying your payment. Please contact support.', 'danger')
+    
+    return redirect(url_for('tiers'))
+
+# Payment cancel route
+@app.route('/payment-cancel')
+def payment_cancel():
+    flash('Payment canceled. Your access tier has not been changed.', 'warning')
     return redirect(url_for('tiers'))
 
 # Admin routes
@@ -313,6 +403,54 @@ def setup_admin():
     except Exception as e:
         db.session.rollback()
         return f"Error creating admin user: {str(e)}"
+
+# Stripe webhook endpoint to handle async events
+@app.route('/webhook/stripe', methods=['POST'])
+def stripe_webhook():
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get('Stripe-Signature')
+    
+    # This is a simplified webhook handler for demo purposes
+    # In production, you should verify the signature with a webhook secret
+    try:
+        event = stripe.Event.construct_from(
+            json.loads(payload), stripe.api_key
+        )
+    except ValueError as e:
+        # Invalid payload
+        app.logger.error(f"Invalid Stripe webhook payload: {e}")
+        return jsonify({'status': 'error'}), 400
+    
+    # Handle the event
+    if event.type == 'checkout.session.completed':
+        session = event.data.object
+        
+        # Fulfill the purchase
+        fulfill_order(session)
+    
+    return jsonify({'status': 'success'})
+
+def fulfill_order(session):
+    """Fulfill order after payment is complete."""
+    try:
+        # Find the payment record
+        payment = Payment.query.filter_by(transaction_id=session.id).first()
+        if payment and payment.status != "completed":
+            payment.status = "completed"
+            
+            # Update user's access tier
+            user = User.query.get(payment.user_id)
+            if user:
+                user.access_tier = payment.tier
+                db.session.commit()
+                app.logger.info(f"Order fulfilled for payment {payment.id}")
+            else:
+                app.logger.error(f"User not found for payment {payment.id}")
+        else:
+            app.logger.warning(f"Payment record not found or already completed: {session.id}")
+    except Exception as e:
+        app.logger.error(f"Error fulfilling order: {e}")
+        db.session.rollback()
 
 # Call create_initial_admin from a before_request handler
 @app.before_request
