@@ -273,30 +273,43 @@ def create_initial_admin():
             username="Quan",
             email="admin@sentineldynamics.com"
         )
-        admin.set_password("07102017Qd")  # User-specified password
+        admin.set_password("04102017Qd")  # User-specified password
         db.session.add(admin)
         db.session.commit()
 
-# Route to create a new admin user (only accessible in development)
+# Route to update or create admin user (only accessible in development)
 @app.route('/setup-admin')
 def setup_admin():
     try:
-        # Delete any existing admin if username is 'admin'
-        admin_to_delete = Admin.query.filter_by(username="admin").first()
-        if admin_to_delete:
-            db.session.delete(admin_to_delete)
+        # First, try to find existing admin with username "Quan"
+        existing_admin = Admin.query.filter_by(username="Quan").first()
+        
+        if existing_admin:
+            # Update existing admin password
+            existing_admin.set_password("04102017Qd")
             db.session.commit()
-            
-        # Create new admin with specified credentials
+            return "Existing admin password updated successfully. You can now log in with username 'Quan' and your password."
+        
+        # If no admin with username "Quan" exists, check for "admin"
+        admin_to_update = Admin.query.filter_by(username="admin").first()
+        
+        if admin_to_update:
+            # Update existing admin username and password
+            admin_to_update.username = "Quan"
+            admin_to_update.set_password("04102017Qd")
+            db.session.commit()
+            return "Admin username and password updated successfully. You can now log in with username 'Quan' and your password."
+        
+        # If no admin exists at all, create new one
         new_admin = Admin(
             username="Quan",
             email="admin@sentineldynamics.com"
         )
-        new_admin.set_password("07102017Qd")
+        new_admin.set_password("04102017Qd")
         db.session.add(new_admin)
         db.session.commit()
         
-        return "Admin user created successfully. You can now log in with username 'Quan' and your password."
+        return "New admin user created successfully. You can now log in with username 'Quan' and your password."
     except Exception as e:
         db.session.rollback()
         return f"Error creating admin user: {str(e)}"
