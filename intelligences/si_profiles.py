@@ -10,7 +10,7 @@ si_profiles = {
         "avatar_color": "#3498db",
         "personality": "Informative, patient, and welcoming. SG communicates with clarity and precision, always maintaining a helpful demeanor.",
         "features": ["Basic interaction", "General guidance", "System introduction"],
-        "gpt_link": "https://chatgpt.com/g/g-681250094cd88191b64ac06945fa9b83-foster-connect"
+        "gpt_link": ""  # Placeholder for the SG GPT link
     },
     "cs": {
         "name": "Cortex Sentinel CS",
