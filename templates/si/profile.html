@@ -34,12 +34,21 @@
             </span>
           </div>
           
-          {% if si.gpt_link %}
-          <div class="mt-4">
-            <a href="{{ si.gpt_link }}" target="_blank" class="btn btn-primary w-100">
-              <i class="fas fa-external-link-alt me-2"></i>Connect with {{ si.name }}
-            </a>
-          </div>
+          <!-- Display multiple GPT links if available, or fallback to single link -->
+          {% if si.gpt_links and si.gpt_links|length > 0 %}
+            <div class="mt-4">
+              {% for link in si.gpt_links %}
+                <a href="{{ link }}" target="_blank" class="btn btn-primary w-100 {% if not loop.first %}mt-2{% endif %}">
+                  <i class="fas fa-external-link-alt me-2"></i>Connect with {{ si.name }} {% if si.gpt_links|length > 1 %}(Option {{ loop.index }}){% endif %}
+                </a>
+              {% endfor %}
+            </div>
+          {% elif si.gpt_link %}
+            <div class="mt-4">
+              <a href="{{ si.gpt_link }}" target="_blank" class="btn btn-primary w-100">
+                <i class="fas fa-external-link-alt me-2"></i>Connect with {{ si.name }}
+              </a>
+            </div>
           {% endif %}
         </div>
       </div>
