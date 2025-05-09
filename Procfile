@@ -1,1 +1,1 @@
-web: gunicorn main:app  # sentinel-core
+web: gunicorn main:app
