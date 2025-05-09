@@ -22,21 +22,25 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "sentinel-si-secret-key-for-development")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # needed for url_for to generate with https
 
-# ✅ Corrected to read from SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///sentinel.db")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-    "pool_size": 10,
-    "max_overflow": 20,
-    "connect_args": {
-        "connect_timeout": 10,
-        "keepalives": 1,
-        "keepalives_idle": 30,
-        "keepalives_interval": 10,
-        "keepalives_count": 5
+# Read the database URI
+db_uri = os.environ.get("SQLALCHEMY_DATABASE_URI", "sqlite:///sentinel.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+
+# Apply engine options only if using PostgreSQL
+if db_uri.startswith("postgresql"):
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
+        "pool_size": 10,
+        "max_overflow": 20,
+        "connect_args": {
+            "connect_timeout": 10,
+            "keepalives": 1,
+            "keepalives_idle": 30,
+            "keepalives_interval": 10,
+            "keepalives_count": 5
+        }
     }
-}
 
 # Initialize db with app
 db.init_app(app)
