@@ -1,11 +1,17 @@
-# Updated generate_access_code function inserted by Commander Sentinel
+
+import uuid
+from flask import request, redirect, url_for, flash
+from flask_login import login_required
+from app import app, db
+from models import AccessCode
+from intelligences.si_profiles import si_profiles
 
 @app.route('/admin/generate-code', methods=['POST'])
 @login_required
 def generate_access_code():
     tier = request.form.get('tier', '')
-    si_id = request.form.get('si_id', '')  # new: SI ID selected by admin
-    user_name = request.form.get('user_name', '').strip().title()  # new: user input
+    si_id = request.form.get('si_id', '')  # SI ID selected by admin
+    user_name = request.form.get('user_name', '').strip().title()  # User input
 
     # Validate tier
     valid_tiers = ["Dormant Observer", "Sentinel Core", "Guardian Elite"]
@@ -26,4 +32,3 @@ def generate_access_code():
 
     flash(f'Access code generated: {code}', 'success')
     return redirect(url_for('admin_dashboard'))
-
