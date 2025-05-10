@@ -119,3 +119,38 @@ def generate_access_code():
     db.session.commit()
     flash(f'Access code generated: {code}', 'success')
     return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        admin = Admin.query.filter_by(username=username).first()
+        if admin and admin.check_password(password):
+            login_user(admin)
+            return redirect(url_for('admin_dashboard'))
+        flash('Invalid username or password', 'danger')
+    return render_template('admin/login.html')
+
+@app.route('/admin/logout')
+@login_required
+def admin_logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    try:
+        user_count = User.query.count()
+        interaction_count = Interaction.query.count()
+        recent_interactions = Interaction.query.order_by(Interaction.timestamp.desc()).limit(20).all()
+        return render_template('admin/dashboard.html',
+                               user_count=user_count,
+                               interaction_count=interaction_count,
+                               recent_interactions=recent_interactions)
+    except Exception as e:
+        app.logger.error(f"Dashboard error: {e}")
+        flash("Dashboard could not be loaded.", "danger")
+        return render_template('admin/dashboard.html', user_count=0, interaction_count=0, recent_interactions=[])
